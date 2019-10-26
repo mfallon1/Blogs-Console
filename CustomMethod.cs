@@ -8,6 +8,7 @@ namespace BlogsConsole
 {
     class CustomMethod  // error handler
     {
+
         public static bool IsBlank(string s)
         {
             if (s == " " || s == "")

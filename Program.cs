@@ -33,6 +33,7 @@ namespace BlogsConsole
                 choice = selection.ToString();
                 logger.Info("User choice: {Choice}", choice);
 
+
                 if (choice == "1")
                 {
                     ProcessChoice.DisplayBlogs(); // display the blogs
@@ -44,10 +45,12 @@ namespace BlogsConsole
                     ProcessChoice.EnterBlogs(); // Enter a new blog
                 }
 
+
                 else if (choice == "3")
                 {
                     ProcessChoice.EnterPosts();  // Enter a post
                 }
+
 
             } while (choice == "1" || choice == "2" || choice == "3");
             logger.Info("Program ended");

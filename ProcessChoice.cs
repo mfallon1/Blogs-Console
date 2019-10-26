@@ -70,7 +70,6 @@ namespace BlogsConsole
                         Console.WriteLine(item);
                     }
 
- //                   var good = 123456;
                     do
                     {
                         Console.WriteLine("Enter the BlogId for the new POST");     // choose the blog for the post

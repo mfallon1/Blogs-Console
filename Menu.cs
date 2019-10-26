@@ -31,6 +31,7 @@ namespace BlogsConsole
 
             while (!IsSelValid(Console.ReadKey(true).KeyChar, out selection))
             {
+
                 Console.WriteLine($"Invalid input: {selection}");
                 Console.WriteLine();
                 Console.WriteLine("Please enter (1) Display All Blogs, (2)Add Blog, (3)Create Post, (4) Exit");
@@ -39,8 +40,10 @@ namespace BlogsConsole
 
             Console.WriteLine();
             return selection;
+
         }
-        private bool IsSelValid(char input, out char selection)
+
+        private bool IsSelValid(char input, out char selection) //validation
         {
             char[] validValues = { '1', '2', '3', '4' };
             selection = input;
