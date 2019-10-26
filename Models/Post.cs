@@ -1,4 +1,6 @@
-﻿namespace BlogsConsole.Models
+﻿using System;
+
+namespace BlogsConsole.Models
 {
     public class Post
     {
@@ -8,5 +10,6 @@
 
         public int BlogId { get; set; }
         public Blog Blog { get; set; }
+
     }
 }
