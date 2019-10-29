@@ -54,7 +54,30 @@ namespace BlogsConsole
             logger.Info("Blog added - {name}", name);
         }
 
-        public static void EnterPosts()        // create Post
+        public static void DisplayPosts()
+        {
+            Console.WriteLine("Which Posts would you like to Display?");
+            using (var db = new BloggingContext()) // this is a connection to the db
+            {
+                Console.WriteLine("\t" + "0) " + "Posts from all blogs");
+                {
+                    var query = db.Blogs.Concat("0", "all blogs").OrderBy(b => b.BlogId).Concat("0";
+                    foreach (var item in query)
+                    {
+                        Console.WriteLine("\t" + item.BlogId + ") Posts from " + item.Name);
+                    }
+                    Console.ReadLine();
+                }
+                //var postList = db.Posts.Select(b => b).ToList();
+                //foreach (var item in postList)
+                //{
+                //    Console.WriteLine("\t" + item.BlogId + ") " + item.Name);
+                //}
+                Console.ReadLine();
+            }
+        }
+
+            public static void EnterPosts()        // create Post
         {
             int selcount = 0;
             string content;
@@ -149,9 +172,5 @@ namespace BlogsConsole
 
     }
 
-        private static void OutputResults(IOrderedQueryable<object> query)
-        {
-            throw new NotImplementedException();
-        }
     }
 }

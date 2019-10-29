@@ -51,9 +51,9 @@ namespace BlogsConsole
                     ProcessChoice.EnterPosts();  // Enter a post
                 }
 
-                else if (choice == "3")
+                else if (choice == "4")
                 {
-                    ProcessChoice.EnterPosts();  // Enter a post
+                    ProcessChoice.DisplayPosts();  // Enter a post
                 }
 
             } while (choice == "1" || choice == "2" || choice == "3" || choice == "4");
