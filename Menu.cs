@@ -19,7 +19,8 @@ namespace BlogsConsole
             Console.WriteLine("1) Display All Blogs");
             Console.WriteLine("2) Add Blog");
             Console.WriteLine("3) Create Post");
-            Console.WriteLine("4) Exit");
+            Console.WriteLine("4) Display Posts");
+            Console.WriteLine("E) Exit");
             Console.WriteLine();
 
             // input selection
@@ -34,7 +35,7 @@ namespace BlogsConsole
 
                 Console.WriteLine($"Invalid input: {selection}");
                 Console.WriteLine();
-                Console.WriteLine("Please enter (1) Display All Blogs, (2)Add Blog, (3)Create Post, (4) Exit");
+                Console.WriteLine("Please enter (1) Display All Blogs, (2)Add Blog, (3)Create Post, (4) Display Post, (E) Exit");
                 Console.Write("");
             }
 
@@ -45,7 +46,7 @@ namespace BlogsConsole
 
         private bool IsSelValid(char input, out char selection) //validation
         {
-            char[] validValues = { '1', '2', '3', '4' };
+            char[] validValues = { '1', '2', '3', '4','E' };
             selection = input;
             if (validValues.Contains(input))
             {

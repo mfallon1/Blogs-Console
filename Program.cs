@@ -25,8 +25,8 @@ namespace BlogsConsole
             do
             {
                 var menu = new Menu();  // display the menu and return the selection
-                selection = menu.GetInput();
-                if (selection.Equals('4'))
+                selection = char.ToUpper(menu.GetInput());
+                if (selection.Equals('E'))
                 {
                     break;
                 }
@@ -51,8 +51,12 @@ namespace BlogsConsole
                     ProcessChoice.EnterPosts();  // Enter a post
                 }
 
+                else if (choice == "3")
+                {
+                    ProcessChoice.EnterPosts();  // Enter a post
+                }
 
-            } while (choice == "1" || choice == "2" || choice == "3");
+            } while (choice == "1" || choice == "2" || choice == "3" || choice == "4");
             logger.Info("Program ended");
         }
     }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Entity.SqlServer;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,7 +12,7 @@ namespace BlogsConsole
     public class ProcessChoice
     {
         private static NLog.Logger logger = NLog.LogManager.GetCurrentClassLogger();
-
+        //var query;
         static string s;
         internal static void DisplayBlogs()
         {
@@ -19,6 +20,7 @@ namespace BlogsConsole
             using (var db = new BloggingContext())              // this is a connection to the db
             {
                 var query = db.Blogs.OrderBy(b => b.Name);
+                Console.WriteLine("There are " + query.Count() + " Blogs");
                 foreach (var item in query)
                 {
                     Console.WriteLine("\t" + item.Name);
@@ -63,12 +65,22 @@ namespace BlogsConsole
                 Console.WriteLine("Which Blog would you like to create a POST in?");      
                 using (var db = new BloggingContext()) // this is a connection to the db
                 {
-                    Console.WriteLine();
-                    var query = db.Blogs.Select(b => new { ID = b.BlogId,    b.Name }).OrderBy(i => i).ToList(); // first show the blogs
-                    foreach (var item in query)
+                    // Console.WriteLine();
+                    //var query = db.Blogs.Select(b => new { ID = SqlFunctions.StringConvert((double)b.BlogId),    b.Name }).OrderBy(i => i).Count(); // first show the blogs
+                    var blogList = db.Blogs.Select(b=>b).ToList();
+                    foreach (var item in blogList)
                     {
-                        Console.WriteLine(item);
+                        Console.WriteLine("\t" + item.BlogId + ") " + item.Name);
                     }
+                    Console.ReadLine();
+                    //OutputResults(query); // write to the ALL.csv from the query
+
+                    //Console.WriteLine();
+                    //var query = db.Blogs.Select(b => new { ID = b.BlogId,    b.Name }).OrderBy(i => i).ToList(); // first show the blogs
+                    //foreach (var item in query)
+                    //{
+                    //    Console.WriteLine(item);
+                    //}
 
                     do
                     {
@@ -76,7 +88,8 @@ namespace BlogsConsole
                         try
                         {
                             int bchoice = Int32.Parse(Console.ReadLine());
-                            var bc = query.Where(c => c.ID == bchoice).SingleOrDefault();   // verify blogid entered by checking the above list of valid BlogId's it will only 
+                            var bc = blogList.Where(c => c.BlogId == bchoice).SingleOrDefault();   // verify blogid entered by checking the above list of valid BlogId's it will only 
+  //                          var bc = blogList.Where(c => BlogId == bchoice).SingleOrDefault();
                             if (bc == null)                                                 // be null if the ID didn't exist
                             {
                                 Console.WriteLine($"Not a valid ID Press ENTER to continue");
@@ -111,7 +124,8 @@ namespace BlogsConsole
                                 }
                                 while (CustomMethod.IsBlank(s));
 
-                                var post = new Post { Title = title, Content = content, BlogId = bc.ID };
+                                //var post = new Post { Title = title, Content = content, BlogId = bc.ID };
+                                var post = new Post { Title = title, Content = content, BlogId = bc.BlogId };
                                 var dbase = new BloggingContext(); // this is a connection to the db
 
                                 dbase.AddPost(post);
@@ -134,5 +148,10 @@ namespace BlogsConsole
         
 
     }
-}
+
+        private static void OutputResults(IOrderedQueryable<object> query)
+        {
+            throw new NotImplementedException();
+        }
+    }
 }
