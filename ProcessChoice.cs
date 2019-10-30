@@ -70,54 +70,55 @@ namespace BlogsConsole
                         Console.WriteLine($"   {item.BlogId}) Posts from {item.Name}");
 
                     }
-                  //  Console.ReadLine();
                 }
-                //var postList = db.Posts.Select(b => b).ToList();
-                //foreach (var item in postList)
-                //{
-                //    Console.WriteLine("\t" + item.BlogId + ") " + item.Name);
-                //}
+
                 try
                 {
                     int bchoice = Int32.Parse(Console.ReadLine());
-                    if (bchoice == 0)
-                    {
-                        var cquery = db.Posts;//.OrderBy(p => p.PostId);
-                        Console.WriteLine($" {cquery.Count()} Post(s) returned");
 
-                        var query = (from bl in db.Blogs
-                                     join pos in db.Posts on bl.BlogId equals pos.BlogId
-                                     select new { Bid = bl.BlogId, Nm = bl.Name });
-                        foreach (var item in query)
+                    if (bchoice == 0) // all posts
+                    {
+                        var cquery = db.Posts;
+                        Console.WriteLine($" {cquery.Count()} Post(s) returned\n");
+
+                        var query = db.Blogs.
+                                     Join(db.Posts, bl => bl.BlogId, pos => pos.BlogId,
+                                     (bl, pos) => new { bl.BlogId, bl.Name }).Distinct(); 
+
+                        foreach (var item in query)  // display blog name and the posts under it
                         {
-                            Console.WriteLine($"Blog: {item.Nm}");
-                            GetPost(item.Bid);
-                            Console.ReadLine();
-                            //var postquery = from b in db.Blogs
-                            //                select Posts.Title, Posts.Content from db.Posts;
-                            //                       //select new {p.Title, p.Content };
-                            //foreach (var pitem in postquery)
-                            //{
-                            //    Console.WriteLine($"Title: {pitem.Title}");
-                            //    Console.WriteLine($"Content: {pitem.Content}");
-                            //}
+                            Console.WriteLine($"Blog: {item.Name}\n");
+                            GetPost(item.BlogId);
+                        }
+                    }
+
+                    else if(bchoice != 0)
+                    { 
+                        var exist = db.Blogs.Any(c => c.BlogId == bchoice);   // verify blogid entered by checking the above list of valid BlogId's it will only 
+                        //var bc = blogList.Where(c => BlogId == bchoice).SingleOrDefault();
+                        if (!exist)                                                 // be null if the ID didn't exist
+                        {
+                            Console.WriteLine($"Not a valid ID Press ENTER to continue");
+                            logger.Info("invalid BlogID entered");
                         }
 
-                        //var query = from b in db.Blogs
-                        //            select from p in db.Posts
-                        //                   select new { b.BlogId, b.Name, p.PostId, p.Title, p.Content };
+                        else if (exist)                        // good blog choice  Prompt for Post Information
+                        {
+                            var cquery = db.Posts.Where(p => p.BlogId == bchoice).Count();
+                            Console.WriteLine($" {cquery} Post(s) returned\n");
+                            if (cquery != 0)
+                            { 
+                                var query = db.Blogs.
+                                         Join(db.Posts, bl => bl.BlogId, pos => pos.BlogId,
+                                         (bl, pos) => new { bl.BlogId, bl.Name }).Distinct();
 
-                    }
-                    var exist = db.Blogs.Any(c => c.BlogId == bchoice);   // verify blogid entered by checking the above list of valid BlogId's it will only 
-                                                                                                   //                          var bc = blogList.Where(c => BlogId == bchoice).SingleOrDefault();
-                    if (!exist)                                                 // be null if the ID didn't exist
-                    {
-                        Console.WriteLine($"Not a valid ID Press ENTER to continue");
-                        logger.Info("invalid BlogID entered");
-                    }
-
-                    else if (exist)                        // good blog choice  Prompt for Post Information
-                    {
+                                foreach (var item in query)  // display blog name and the posts under it
+                                {
+                                Console.WriteLine($"Blog: {item.Name}\n");
+                                GetPost(item.BlogId);
+                                }
+                            }
+                        }
                     }
                 }
                 catch (FormatException)
@@ -142,8 +143,8 @@ namespace BlogsConsole
                 //select new {p.Title, p.Content };
                 foreach (var pitem in postquery)
                 {
-                    Console.WriteLine($"Title: {pitem.pTtl}");
-                    Console.WriteLine($"Content: {pitem.pContent}");
+                    Console.WriteLine($"   Title: {pitem.pTtl}");
+                    Console.WriteLine($"   Content: {pitem.pContent}\n");
                 }
             }
         }
