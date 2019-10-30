@@ -12,6 +12,7 @@ namespace BlogsConsole
     public class ProcessChoice
     {
         private static NLog.Logger logger = NLog.LogManager.GetCurrentClassLogger();
+
         //var query;
         static string s;
         internal static void DisplayBlogs()
@@ -20,11 +21,12 @@ namespace BlogsConsole
             using (var db = new BloggingContext())              // this is a connection to the db
             {
                 var query = db.Blogs.OrderBy(b => b.Name);
-                Console.WriteLine("There are " + query.Count() + " Blogs");
+                Console.WriteLine("You have " + query.Count() + " Blogs");
                 foreach (var item in query)
                 {
                     Console.WriteLine("\t" + item.Name);
                 }
+                Console.WriteLine("\t" + "Press ENTER to continue");
                 Console.ReadLine();
             }
 
@@ -59,26 +61,95 @@ namespace BlogsConsole
             Console.WriteLine("Which Posts would you like to Display?");
             using (var db = new BloggingContext()) // this is a connection to the db
             {
-                Console.WriteLine("\t" + "0) " + "Posts from all blogs");
+                Console.WriteLine($"   0) Posts from all blogs");
+
                 {
-                    var query = db.Blogs.Concat("0", "all blogs").OrderBy(b => b.BlogId).Concat("0";
+                    var query = db.Blogs.OrderBy(b => b.BlogId);
                     foreach (var item in query)
                     {
-                        Console.WriteLine("\t" + item.BlogId + ") Posts from " + item.Name);
+                        Console.WriteLine($"   {item.BlogId}) Posts from {item.Name}");
+
                     }
-                    Console.ReadLine();
+                  //  Console.ReadLine();
                 }
                 //var postList = db.Posts.Select(b => b).ToList();
                 //foreach (var item in postList)
                 //{
                 //    Console.WriteLine("\t" + item.BlogId + ") " + item.Name);
                 //}
-                Console.ReadLine();
+                try
+                {
+                    int bchoice = Int32.Parse(Console.ReadLine());
+                    if (bchoice == 0)
+                    {
+                        var cquery = db.Posts;//.OrderBy(p => p.PostId);
+                        Console.WriteLine($" {cquery.Count()} Post(s) returned");
+
+                        var query = (from bl in db.Blogs
+                                     join pos in db.Posts on bl.BlogId equals pos.BlogId
+                                     select new { Bid = bl.BlogId, Nm = bl.Name });
+                        foreach (var item in query)
+                        {
+                            Console.WriteLine($"Blog: {item.Nm}");
+                            GetPost(item.Bid);
+                            Console.ReadLine();
+                            //var postquery = from b in db.Blogs
+                            //                select Posts.Title, Posts.Content from db.Posts;
+                            //                       //select new {p.Title, p.Content };
+                            //foreach (var pitem in postquery)
+                            //{
+                            //    Console.WriteLine($"Title: {pitem.Title}");
+                            //    Console.WriteLine($"Content: {pitem.Content}");
+                            //}
+                        }
+
+                        //var query = from b in db.Blogs
+                        //            select from p in db.Posts
+                        //                   select new { b.BlogId, b.Name, p.PostId, p.Title, p.Content };
+
+                    }
+                    var exist = db.Blogs.Any(c => c.BlogId == bchoice);   // verify blogid entered by checking the above list of valid BlogId's it will only 
+                                                                                                   //                          var bc = blogList.Where(c => BlogId == bchoice).SingleOrDefault();
+                    if (!exist)                                                 // be null if the ID didn't exist
+                    {
+                        Console.WriteLine($"Not a valid ID Press ENTER to continue");
+                        logger.Info("invalid BlogID entered");
+                    }
+
+                    else if (exist)                        // good blog choice  Prompt for Post Information
+                    {
+                    }
+                }
+                catch (FormatException)
+                {
+                    Console.WriteLine($"ID must be a number Press ENTER to continue");
+                }
+          //      Console.ReadLine();
             }
         }
 
-            public static void EnterPosts()        // create Post
+        private static void GetPost(int Bid)
         {
+            using (var db = new BloggingContext()) // this is a connection to the db
+                //var query = (from bl in db.Blogs
+                //             join pos in db.Posts on bl.BlogId equals pos.BlogId
+                //             select new { Bid = bl.BlogId, Nm = bl.Name });
+            {
+                var postquery = (from bl in db.Blogs
+                                 join pos in db.Posts on bl.BlogId equals pos.BlogId
+                                 where bl.BlogId == Bid
+                                 select new { pTtl = pos.Title, pContent = pos.Content });
+                //select new {p.Title, p.Content };
+                foreach (var pitem in postquery)
+                {
+                    Console.WriteLine($"Title: {pitem.pTtl}");
+                    Console.WriteLine($"Content: {pitem.pContent}");
+                }
+            }
+        }
+
+        public static void EnterPosts()        // create Post
+            {
             int selcount = 0;
             string content;
             string title;
@@ -93,9 +164,10 @@ namespace BlogsConsole
                     var blogList = db.Blogs.Select(b=>b).ToList();
                     foreach (var item in blogList)
                     {
-                        Console.WriteLine("\t" + item.BlogId + ") " + item.Name);
+                    //    Console.WriteLine("\t" + item.BlogId + ") " + item.Name);
+                        Console.WriteLine($"   {item.BlogId})  {item.Name}");
                     }
-                    Console.ReadLine();
+                   // Console.ReadLine();
                     //OutputResults(query); // write to the ALL.csv from the query
 
                     //Console.WriteLine();
@@ -149,6 +221,7 @@ namespace BlogsConsole
 
                                 //var post = new Post { Title = title, Content = content, BlogId = bc.ID };
                                 var post = new Post { Title = title, Content = content, BlogId = bc.BlogId };
+
                                 var dbase = new BloggingContext(); // this is a connection to the db
 
                                 dbase.AddPost(post);

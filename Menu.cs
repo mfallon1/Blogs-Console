@@ -46,7 +46,7 @@ namespace BlogsConsole
 
         private bool IsSelValid(char input, out char selection) //validation
         {
-            char[] validValues = { '1', '2', '3', '4','E' };
+            char[] validValues = { '1', '2', '3', '4','E','e' };
             selection = input;
             if (validValues.Contains(input))
             {
