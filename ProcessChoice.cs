@@ -107,10 +107,11 @@ namespace BlogsConsole
                             var cquery = db.Posts.Where(p => p.BlogId == bchoice).Count();
                             Console.WriteLine($" {cquery} Post(s) returned\n");
                             if (cquery != 0)
-                            { 
+                            {
+                                // only diplay the posts for selected blog
                                 var query = db.Blogs.
                                          Join(db.Posts, bl => bl.BlogId, pos => pos.BlogId,
-                                         (bl, pos) => new { bl.BlogId, bl.Name }).Distinct();
+                                         (bl, pos) => new { bl.BlogId, bl.Name }).Where(c =>c.BlogId == bchoice).Distinct();
 
                                 foreach (var item in query)  // display blog name and the posts under it
                                 {
