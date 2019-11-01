@@ -11,7 +11,7 @@ namespace BlogsConsole
 
         public static bool IsBlank(string s)
         {
-            if (s == " " || s == "")
+            if (s == " " || s == "" || s == null)
             {
                 return true;
             }

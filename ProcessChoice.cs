@@ -9,15 +9,14 @@ using NLog;
 
 namespace BlogsConsole
 {
-    public class ProcessChoice
+    public class ProcessChoice                                  // process the menu choices
     {
         private static NLog.Logger logger = NLog.LogManager.GetCurrentClassLogger();
 
-        //var query;
         static string s;
-        internal static void DisplayBlogs()
+        internal static void DisplayBlogs()                     // Display all Blogs from the database
         {
-            Console.WriteLine("** Here are your blogs:\n");     // Display all Blogs from the database
+            Console.WriteLine("** Here are your blogs:\n");     
             using (var db = new BloggingContext())              // this is a connection to the db
             {
                 var query = db.Blogs.OrderBy(b => b.Name);
@@ -26,13 +25,13 @@ namespace BlogsConsole
                 {
                     Console.WriteLine("\t" + item.Name);
                 }
-                Console.WriteLine("\t" + "Press ENTER to continue");
+                Console.WriteLine("\nPress ENTER to continue");
                 Console.ReadLine();
             }
 
         }
 
-        public static void EnterBlogs()                         // prompt for Blog info
+        public static void EnterBlogs()                         // create a blog - prompt for Blog info
         {
             string name;
             do   
@@ -49,14 +48,13 @@ namespace BlogsConsole
             while (CustomMethod.IsBlank(s));
 
             var blog = new Blog { Name = name };
-
             var db = new BloggingContext(); // this is a connection to the db
 
             db.AddBlog(blog);
             logger.Info("Blog added - {name}", name);
         }
 
-        public static void DisplayPosts()
+        public static void DisplayPosts()   // display the posts under the single blog item
         {
             Console.WriteLine("Which Posts would you like to Display?");
             using (var db = new BloggingContext()) // this is a connection to the db
@@ -68,13 +66,12 @@ namespace BlogsConsole
                     foreach (var item in query)
                     {
                         Console.WriteLine($"   {item.BlogId}) Posts from {item.Name}");
-
                     }
                 }
 
                 try
                 {
-                    int bchoice = Int32.Parse(Console.ReadLine());
+                    int bchoice = Int32.Parse(Console.ReadLine());   // make sure it is a number
 
                     if (bchoice == 0) // all posts
                     {
@@ -95,7 +92,6 @@ namespace BlogsConsole
                     else if(bchoice != 0)
                     { 
                         var exist = db.Blogs.Any(c => c.BlogId == bchoice);   // verify blogid entered by checking the above list of valid BlogId's it will only 
-                        //var bc = blogList.Where(c => BlogId == bchoice).SingleOrDefault();
                         if (!exist)                                                 // be null if the ID didn't exist
                         {
                             Console.WriteLine($"Not a valid ID Press ENTER to continue");
@@ -108,7 +104,7 @@ namespace BlogsConsole
                             Console.WriteLine($" {cquery} Post(s) returned\n");
                             if (cquery != 0)
                             {
-                                // only diplay the posts for selected blog
+                                                            // only diplay the posts for selected blog
                                 var query = db.Blogs.
                                          Join(db.Posts, bl => bl.BlogId, pos => pos.BlogId,
                                          (bl, pos) => new { bl.BlogId, bl.Name }).Where(c =>c.BlogId == bchoice).Distinct();
@@ -116,7 +112,7 @@ namespace BlogsConsole
                                 foreach (var item in query)  // display blog name and the posts under it
                                 {
                                 Console.WriteLine($"Blog: {item.Name}\n");
-                                GetPost(item.BlogId);
+                                GetPost(item.BlogId);       // get the posts
                                 }
                             }
                         }
@@ -126,22 +122,18 @@ namespace BlogsConsole
                 {
                     Console.WriteLine($"ID must be a number Press ENTER to continue");
                 }
-          //      Console.ReadLine();
             }
         }
 
-        private static void GetPost(int Bid)
+        private static void GetPost(int Bid)        // this will display the posts - they show up under the blog
         {
             using (var db = new BloggingContext()) // this is a connection to the db
-                //var query = (from bl in db.Blogs
-                //             join pos in db.Posts on bl.BlogId equals pos.BlogId
-                //             select new { Bid = bl.BlogId, Nm = bl.Name });
             {
                 var postquery = (from bl in db.Blogs
                                  join pos in db.Posts on bl.BlogId equals pos.BlogId
                                  where bl.BlogId == Bid
                                  select new { pTtl = pos.Title, pContent = pos.Content });
-                //select new {p.Title, p.Content };
+
                 foreach (var pitem in postquery)
                 {
                     Console.WriteLine($"   Title: {pitem.pTtl}");
@@ -161,35 +153,22 @@ namespace BlogsConsole
                 Console.WriteLine("Which Blog would you like to create a POST in?");      
                 using (var db = new BloggingContext()) // this is a connection to the db
                 {
-                    // Console.WriteLine();
-                    //var query = db.Blogs.Select(b => new { ID = SqlFunctions.StringConvert((double)b.BlogId),    b.Name }).OrderBy(i => i).Count(); // first show the blogs
                     var blogList = db.Blogs.Select(b=>b).ToList();
                     foreach (var item in blogList)
                     {
-                    //    Console.WriteLine("\t" + item.BlogId + ") " + item.Name);
                         Console.WriteLine($"   {item.BlogId})  {item.Name}");
                     }
-                   // Console.ReadLine();
-                    //OutputResults(query); // write to the ALL.csv from the query
-
-                    //Console.WriteLine();
-                    //var query = db.Blogs.Select(b => new { ID = b.BlogId,    b.Name }).OrderBy(i => i).ToList(); // first show the blogs
-                    //foreach (var item in query)
-                    //{
-                    //    Console.WriteLine(item);
-                    //}
 
                     do
                     {
-                        Console.WriteLine("Enter the BlogId for the new POST");     // choose the blog for the post
+                        Console.WriteLine("Enter the BlogId for the new POST and press ENTER");     // choose the blog for the post
                         try
                         {
                             int bchoice = Int32.Parse(Console.ReadLine());
                             var bc = blogList.Where(c => c.BlogId == bchoice).SingleOrDefault();   // verify blogid entered by checking the above list of valid BlogId's it will only 
-  //                          var bc = blogList.Where(c => BlogId == bchoice).SingleOrDefault();
                             if (bc == null)                                                 // be null if the ID didn't exist
                             {
-                                Console.WriteLine($"Not a valid ID Press ENTER to continue");
+                                Console.WriteLine($"Not a valid ID");
                                 logger.Info("invalid BlogID entered");
                             }
 
@@ -200,7 +179,7 @@ namespace BlogsConsole
                                     Console.Write("Enter a TITLE for a new POST: ");
                                     title = Console.ReadLine();
                                     s = title;
-                                    if (CustomMethod.IsBlank(s))
+                                    if (CustomMethod.IsBlank(s))        //check for blank/null
                                     {
                                         Console.WriteLine("\t**Must enter something");
                                         logger.Info("blank post title entered");
@@ -221,7 +200,6 @@ namespace BlogsConsole
                                 }
                                 while (CustomMethod.IsBlank(s));
 
-                                //var post = new Post { Title = title, Content = content, BlogId = bc.ID };
                                 var post = new Post { Title = title, Content = content, BlogId = bc.BlogId };
 
                                 var dbase = new BloggingContext(); // this is a connection to the db
@@ -231,21 +209,18 @@ namespace BlogsConsole
                             }
                                 logger.Info("Blog choice: {BChoice}", bchoice);
                         }
-                        catch (FormatException)
+                        catch (FormatException)  // not a number
                         {
-                            Console.WriteLine($"ID must be a number Press ENTER to continue");
+                            Console.WriteLine($"ID must be a number ");
                         }
 
                     }
                     while (CustomMethod.IsBlank(s));
                     break;
-
- //                   Console.ReadLine();
                 }
             } while (selcount == 0);
-        
-
-    }
+ 
+        }
 
     }
 }
